@@ -131,7 +131,7 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
         with:
           # The default list still includes the long-removed "tools" package, which now fails.
           packages: platform-tools
