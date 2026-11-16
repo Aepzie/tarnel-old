@@ -40,7 +40,7 @@ jobs:
       - name: Install SDK platform
         run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
 
       - name: Assemble debug, unit tests, lint
         run: ./gradlew --no-daemon :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
