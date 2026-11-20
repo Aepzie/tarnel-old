@@ -2,6 +2,7 @@ import { ipcRenderer } from 'electron';
 import { PASSWORD_IPC, type CapturedLogin, type PasswordFrameFlags } from '../shared/passwords';
 import { ALIAS_IPC } from '../shared/aliases';
 import { isEmailField, isSignUpForm } from '../shared/alias-form';
+import { hasAddedPasswordInput } from './password-observer';
 
 /**
  * Session preload for the password manager. Runs in every web frame, in the preload's isolated
@@ -13,7 +14,6 @@ import { isEmailField, isSignUpForm } from '../shared/alias-form';
  */
 
 const isWebFrame = location.protocol === 'https:' || location.protocol === 'http:';
-const WATCH_MS = 30_000;
 const SCAN_DELAY_MS = 400;
 
 const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
@@ -149,7 +149,6 @@ function onLoginForm(): void {
 function watchForLoginForm(): void {
   let timer: number | null = null;
   let done = false;
-  const observer = new MutationObserver(() => schedule());
   const finish = (): void => {
     done = true;
     observer.disconnect();
@@ -165,11 +164,13 @@ function watchForLoginForm(): void {
     if (done || timer !== null) return;
     timer = window.setTimeout(scan, SCAN_DELAY_MS);
   };
+  const observer = new MutationObserver((records) => {
+    if (hasAddedPasswordInput(records)) schedule();
+  });
   const begin = (): void => {
     scan();
     if (done || !document.documentElement) return;
     observer.observe(document.documentElement, { childList: true, subtree: true });
-    window.setTimeout(finish, WATCH_MS);
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', begin, { once: true });
   else begin();

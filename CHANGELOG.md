@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Password manager now detects login forms inserted after page load without rescanning the document for unrelated DOM changes.
+
 ## [0.10.1] - 2026-11-13
 
 ### Fixed
